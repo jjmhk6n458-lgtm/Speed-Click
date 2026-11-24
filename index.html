@@ -1,57 +1,135 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPEED CLICK</title>
+<meta name="theme-color" content="#080d1b">
+<title>SPEED CLICK 2.0</title>
 <style>
-body {
- background:#080d1b;
- color:white;
- font-family:Arial;
- text-align:center;
- padding:25px;
+*{box-sizing:border-box}
+body{
+margin:0;background:#080d1b;color:white;
+font-family:Arial,sans-serif;padding:25px 16px;
 }
-h1 {color:#35c8ff;font-size:32px}
-.card {
- background:#142139;
- padding:25px;
- border-radius:20px;
- margin-top:25px;
+main{max-width:450px;margin:auto}
+header{text-align:center;padding:25px}
+h1{font-size:32px;color:#35c8ff}
+.card{
+background:#142139;padding:22px;
+border-radius:20px;margin:16px 0;
+border:1px solid #29415f;
 }
-button {
- padding:15px 30px;
- border:0;
- border-radius:12px;
- margin:10px;
- font-size:18px;
+.count{font-size:58px;text-align:center;font-weight:bold}
+.status{text-align:center;color:#35c8ff}
+label{display:block;margin:18px 0 8px}
+input,select{
+width:100%;padding:13px;border-radius:10px;
+background:#091426;color:white;border:1px solid #345;
 }
-#start {background:#35c8ff}
-#stop {background:#34445f;color:white}
-#count {font-size:50px}
+input[type=range]{accent-color:#35c8ff}
+button{
+width:100%;padding:16px;margin-top:12px;
+border:0;border-radius:12px;font-size:17px;
+font-weight:bold;
+}
+#start{background:#35c8ff;color:#061323}
+#stop{background:#34445f;color:white}
+small{color:#9aabc5;line-height:2}
 </style>
 </head>
 <body>
+<main>
+<header>
 <h1>⚡ SPEED CLICK</h1>
-<div class="card">
-<p>عداد النقرات التجريبي</p>
-<div id="count">0</div>
-<button id="start" onclick="start()">START</button>
-<button id="stop" onclick="stop()">STOP</button>
-</div>
+<small>VERSION 2.0</small>
+</header>
+
+<section class="card">
+<div class="status" id="status">● متوقف</div>
+<div class="count" id="count">0</div>
+<p style="text-align:center;color:#9aabc5">
+الضغطات التجريبية
+</p>
+
+<label>سرعة الضغط:
+<span id="speedText">10</span> / ثانية
+</label>
+<input id="speed" type="range"
+min="1" max="100" value="10">
+
+<label>مدة التشغيل</label>
+<select id="duration">
+<option value="0">بلا نهاية</option>
+<option value="60">دقيقة</option>
+<option value="300">5 دقائق</option>
+<option value="1200">20 دقيقة</option>
+<option value="3600">ساعة</option>
+</select>
+
+<button id="start">▶ START</button>
+<button id="stop">■ STOP</button>
+</section>
+
+<section class="card">
+<h3>إعدادات التطبيق</h3>
+<small>
+• سرعة قابلة للتعديل من 1 إلى 100.<br>
+• تشغيل مستمر أو بمؤقت.<br>
+• عداد تجريبي للضغطات.<br>
+• إيقاف فوري.
+</small>
+</section>
+
+<section class="card">
+<small>
+تنبيه: هذا الإصدار يحاكي عداد النقرات داخل الصفحة فقط.
+لا يستطيع تنفيذ نقرات تلقائية داخل الألعاب أو التطبيقات الأخرى.
+</small>
+</section>
+</main>
+
 <script>
-let count=0, timer;
-function start(){
- if(timer)return;
- timer=setInterval(()=>{
- count++;
- document.getElementById('count').innerText=count;
- },200);
-}
+let count=0;
+let timer=null;
+let endTimer=null;
+
+const speed=document.getElementById("speed");
+const countBox=document.getElementById("count");
+const statusBox=document.getElementById("status");
+
+speed.oninput=()=>{
+document.getElementById("speedText").textContent=
+speed.value;
+};
+
 function stop(){
- clearInterval(timer);
- timer=null;
+clearInterval(timer);
+clearTimeout(endTimer);
+timer=null;
+endTimer=null;
+statusBox.textContent="● متوقف";
 }
+
+document.getElementById("start").onclick=()=>{
+stop();
+statusBox.textContent="● يعمل الآن";
+
+timer=setInterval(()=>{
+count++;
+countBox.textContent=count.toLocaleString();
+},1000/Number(speed.value));
+
+let seconds=Number(
+document.getElementById("duration").value
+);
+
+if(seconds>0){
+endTimer=setTimeout(stop,seconds*1000);
+}
+};
+
+document.getElementById("stop").onclick=stop;
 </script>
 </body>
 </html>
